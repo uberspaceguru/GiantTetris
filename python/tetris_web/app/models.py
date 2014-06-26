@@ -6,7 +6,7 @@ class Sender():
         self.port = '5555'
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
-        self.socket.bind("tcp://*:%s" % self.port)
+        self.socket.connect("tcp://localhost:%s" % self.port)
 
     def send(self, command):
         try:
