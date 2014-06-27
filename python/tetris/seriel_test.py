@@ -1,4 +1,8 @@
+import os
+
+
 def draw_screen(pixels):
+    os.system('clear')
     line = ''
     for i in xrange(20, 0, -1):
         for j in xrange(1, 11, 1):

@@ -23,6 +23,10 @@ class Display():
 
     def pixel_on(self, pixel = dict()):
         if pixel:
+            x = str(pixel.get('x', 0))
+            y = str(pixel.get('y', 0))
+
+            print 'Pixel On: ' + x + ', ' + y
             # If there is no x and y in the structure then it is invalid and ignore it
             if 0 != pixel.get('x', 0) and 0 != pixel.get('y', 0):
                 # Add to on_pixels collection if color is provided
@@ -37,15 +41,3 @@ class Display():
     
     def hash_pixel(self, x, y):
         return x + ((y - 1) * self.width)
-
-if __name__ == '__main__':
-    w = 10
-    h = 20
-    display = Display(w, h)
-
-    pixel1 = { 'x': 1, 'y': 1, 'r': 1, 'b': 1, 'g': 1 }
-    pixel2 = { 'x': 10, 'y': 10, 'r': 1, 'b': 1, 'g': 1 }
-
-    display.pixel_on(pixel1)
-    display.pixel_on(pixel2)
-    display.draw()
