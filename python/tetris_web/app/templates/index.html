@@ -7,12 +7,55 @@
 </head>
 <body>
     <h1>Tetris Controls</h1>
-    <form action="/action" method="POST" >
         <p>
-            <input type="submit" name="actionbtn" value="LEFT">
-            <input type="submit" name="actionbtn" value="ROTATE">
-            <input type="submit" name="actionbtn" value="RIGHT">
+			<button type="button" id="btnLeft" >Left</button>
+			<button type="button" id="btnRotate" >Rotate</button>
+			<button type="button" id="btnRight" >Right</button>
         </p>
-    </form>
+	<p id="lastMove"></p>
+	<p id="response"></p>
+
+	<script>
+	document.getElementById("btnLeft").addEventListener("click", function(){
+		sendAction("LEFT");
+	});
+	document.getElementById("btnRotate").addEventListener("click", function(){
+		sendAction("ROTATE");
+	});
+	document.getElementById("btnRight").addEventListener("click", function(){
+		sendAction("RIGHT");
+	});
+
+	function sendAction(cmd) {
+			var xmlhttp;
+
+			document.getElementById("lastMove").innerHTML = Date() + ' ' + cmd;
+
+			if (window.XMLHttpRequest)
+				{// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+				}
+			else
+				{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+
+			xmlhttp.open("POST","action",true);
+			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			data="actionbtn=" + cmd;
+			xmlhttp.send(data);
+
+			//When the response comes
+			xmlhttp.onreadystatechange=function()
+				{
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+					{
+					//document.getElementById("response").innerHTML=xmlhttp.responseText;
+					}
+			}
+		}
+
+	</script>
+
 </body>
 </html>
