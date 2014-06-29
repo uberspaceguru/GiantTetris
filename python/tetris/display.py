@@ -1,4 +1,3 @@
-#from __future__ import print_function
 import serial
 
 
@@ -25,9 +24,7 @@ class Display():
                                         parity=self.PARITY,
                                         stopbits=self.STOPBITS,
                                         bytesize=self.BYTESIZE)
-        #self.serialPort.open()
-
-        print('Program is running check serial port for output, using %s' % self.serialPort.portstr)
+        print 'Program is running check serial port for output, using %s' % self.serialPort.portstr
 
     def __del__(self):
         self.serialPort.close()
@@ -75,10 +72,8 @@ class Display():
     def serial_send(self, data):
         try:
             self.serialPort.write(str(data))
-            #print(chr(data, end=''))
         except TypeError:
             self.serialPort.write(data)
-            #print(data, end='')
 
     def hash_pixel(self, x, y):
         return x + ((y - 1) * self.width)
