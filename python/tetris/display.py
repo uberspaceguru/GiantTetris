@@ -1,14 +1,17 @@
+from __future__ import print_function
 import serial
-
+import time
 
 class Display():
     def __init__(self, width, height):
         # Some constants for the program
+        self.START_OF_STREAM = '!'
         self.END_OF_STREAM = '\n'
         self.VALUE_SEPARATOR = ' '
 
         # serial port config
         self.SERIAL_COM_PORT = 'COM5'
+        #self.SERIAL_COM_PORT = 'COM6'
         self.BAUD_RATE = 115200
         self.PARITY = serial.PARITY_NONE
         self.STOPBITS = serial.STOPBITS_ONE
@@ -24,23 +27,32 @@ class Display():
                                         parity=self.PARITY,
                                         stopbits=self.STOPBITS,
                                         bytesize=self.BYTESIZE)
-        print 'Program is running check serial port for output, using %s' % self.serialPort.portstr
+
+        time.sleep(2)
+
+        print('Program is running check serial port for output, using %s' % self.serialPort.portstr)
 
     def __del__(self):
         self.serialPort.close()
 
     def draw(self):
         if self.on_pixels:
+            self.serial_send(self.START_OF_STREAM)
             for pixel in self.on_pixels:
-                self.serial_send(self.on_pixels[pixel].get('x', 0))
+                #self.serial_send(self.on_pixels[pixel].get('x', 0))
+                self.serial_send(self.on_pixels[pixel]['x'])
                 self.serial_send(self.VALUE_SEPARATOR)
-                self.serial_send(self.on_pixels[pixel].get('y', 0))
+                #self.serial_send(self.on_pixels[pixel].get('y', 0))
+                self.serial_send(self.on_pixels[pixel]['y'])
                 self.serial_send(self.VALUE_SEPARATOR)
-                self.serial_send(self.on_pixels[pixel].get('g', 0))
+                #self.serial_send(self.on_pixels[pixel].get('g', 0))
+                self.serial_send(self.on_pixels[pixel]['r'])
                 self.serial_send(self.VALUE_SEPARATOR)
-                self.serial_send(self.on_pixels[pixel].get('r', 0))
+                #self.serial_send(self.on_pixels[pixel].get('r', 0))
+                self.serial_send(self.on_pixels[pixel]['g'])
                 self.serial_send(self.VALUE_SEPARATOR)
-                self.serial_send(self.on_pixels[pixel].get('b', 0))
+                #self.serial_send(self.on_pixels[pixel].get('b', 0))
+                self.serial_send(self.on_pixels[pixel]['b'])
                 self.serial_send(self.VALUE_SEPARATOR)
             self.serial_send(self.END_OF_STREAM)
 
@@ -58,7 +70,7 @@ class Display():
     def pixel_on(self, pixel=dict()):
         if pixel:
             # If there is no x and y in the structure then it is invalid and ignore it
-            if 0 != pixel.get('x', 0) and 0 != pixel.get('y', 0):
+            if 0 <= pixel.get('x', 0) and 0 <= pixel.get('y', 0):
                 # Add to on_pixels collection if color is provided
                 if pixel.get('r', 0) or pixel.get('g', 0) or pixel.get('b', 0):
                     hashval = str(self.hash_pixel(pixel.get('x', 0), pixel.get('y', 0)))
@@ -73,7 +85,12 @@ class Display():
         try:
             self.serialPort.write(str(data))
         except TypeError:
+            pass
             self.serialPort.write(data)
 
+        if self.SERIAL_COM_PORT == 'COM6':
+            print(self.serialPort.readline(), end='')
+
     def hash_pixel(self, x, y):
-        return x + ((y - 1) * self.width)
+        #return x + ((y  - 1) * self.width)
+        return x + (y * self.width)

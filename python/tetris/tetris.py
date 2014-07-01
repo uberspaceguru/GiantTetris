@@ -4,10 +4,10 @@ from controller import Controller
 display = Display(10, 20)
 controller = Controller()
 
-led_x = 1
-led_y = 20
+led_x = 0
+led_y = 19
 
-pixel = {'x': led_x, 'y': led_y, 'r': 1, 'g': 1, 'b': 1}
+pixel = {'x': led_x, 'y': led_y, 'r': 50, 'g': 10, 'b': 100}
 display.pixel_on(pixel=pixel)
 
 run = True
@@ -19,11 +19,11 @@ while run:
         cmd = controller.get_next_cmd()
         if cmd == 'LEFT':
             #print 'moving left'
-            if led_x != 1:
+            if led_x != 0:
                 led_x -= 1
         elif cmd == 'RIGHT':
             #print 'moving right'
-            if led_x != 10:
+            if led_x != 9:
                 led_x += 1
         elif cmd == 'ROTATE':
             pass
@@ -32,8 +32,10 @@ while run:
         if led_y < 1:
             led_y = 20
 
-        pixel_test = {'x': led_x, 'y': led_y, 'r': 1, 'g': 1, 'b': 1}
+        pixel_test = {'x': led_x, 'y': led_y, 'r': 50, 'g': 10, 'b': 100}
         display.pixel_on(pixel=pixel_test)
+
+        #run = False
 
         # pixel_test2 = {'x': 10, 'y': 20, 'r': 1, 'g': 1, 'b': 1}
         # display.pixel_on(pixel=pixel_test2)
