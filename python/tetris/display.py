@@ -10,8 +10,8 @@ class Display():
         self.VALUE_SEPARATOR = ' '
 
         # serial port config
-        self.SERIAL_COM_PORT = 'COM5'
-        #self.SERIAL_COM_PORT = 'COM6'
+        #self.SERIAL_COM_PORT = 'COM5'
+        self.SERIAL_COM_PORT = 'COM6'
         self.BAUD_RATE = 115200
         self.PARITY = serial.PARITY_NONE
         self.STOPBITS = serial.STOPBITS_ONE
@@ -28,6 +28,7 @@ class Display():
                                         stopbits=self.STOPBITS,
                                         bytesize=self.BYTESIZE)
 
+        # Delay to allow serial connection to initialize
         time.sleep(2)
 
         print('Program is running check serial port for output, using %s' % self.serialPort.portstr)
@@ -88,8 +89,11 @@ class Display():
             pass
             self.serialPort.write(data)
 
-        if self.SERIAL_COM_PORT == 'COM6':
+        if self.serialPort.portstr == 'COM6':
             print(self.serialPort.readline(), end='')
+
+        #if self.SERIAL_COM_PORT == 'COM6':
+        #    print(self.serialPort.readline(), end='')
 
     def hash_pixel(self, x, y):
         #return x + ((y  - 1) * self.width)
