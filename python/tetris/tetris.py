@@ -1,7 +1,7 @@
 from display import Display
 from controller import Controller
 
-display = Display(10, 20)
+display = Display(10, 22)
 controller = Controller()
 
 led_x = 0
