@@ -26,104 +26,127 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(numPixels, PIN, NEO_GRB + NEO_KHZ800
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
 
-  void setup() {
-    strip.begin();
-    strip.show(); // Initialize all pixels to 'off'
-    Serial.begin(115200);
-  }
+void setup() {
+	strip.begin();
+	strip.show(); // Initialize all pixels to 'off'
+	Serial.begin(115200);
+}
 
-  void loop() {
-    
-    if(Serial.available() > 0 && Serial.peek() == '!')
-    {
-          Serial.println("serial data available");
-          int x,y,R,G,B;  
-          int pixel;
-          ClearBoard(false);
-          Serial.print("peek:");
-          Serial.println(Serial.peek());
-          while(Serial.peek() != '\n')
-          {
-              x = Serial.parseInt();
-              y = Serial.parseInt();
-              R = Serial.parseInt();
-              G = Serial.parseInt();
-              B = Serial.parseInt();
-              
-              Serial.println(x);
-              Serial.println(y);
-              Serial.println(R);
-              Serial.println(G);
-              Serial.println(B);
-              
-              findPixels(x,y);
-            
-              for(int i = 0; i < numPixelsInBlock; i++)
-              {
-                if(pixelsInBlock[i] == -1)
-                {
-                  Serial.println("Pixel out of range");
-                }
-                else
-                {
-                  Serial.print("Lighting pixel ");
-                  Serial.println(pixelsInBlock[i]);
-                  strip.setPixelColor(pixelsInBlock[i], R,G,B); 
-                }
-              }
-            }
-            //clear out the newline
-            Serial.println("found the newline");
-        
-      }
-      else if (Serial.available() && Serial.peek() != '!')
-      { 
-         Serial.print("ignoring: ");
-         Serial.println(Serial.read());//we don't care if it's not the start bit
-      }
-      
-    Serial.read();
-    strip.show();
-  }
+void loop() {
 
-  
-  void ClearBoard(boolean latch){
-    for(int i = 0; i < numPixels; i++)
-    {
-      strip.setPixelColor(i, 0,0,0);   
-      if(latch)
-      {
-        strip.show();
-      }
-    }
-  }
-  
+	if(Serial.available() && Serial.peek() == '!')
+	{
+		Serial.println("serial data available");
+		Serial.read(); //get rid of the start bit
+		int x,y,R,G,B;  
+		int pixel;
+		ClearBoard(false);
+		char peek = Serial.peek();
+		Serial.print("peek before:");
+		Serial.println(peek);
+		
+		while(peek != '\n')
+		{
+			x = Serial.parseInt();
+			y = Serial.parseInt();
+			R = Serial.parseInt();
+			G = Serial.parseInt();
+			B = Serial.parseInt();
+
+			Serial.println(x);
+			Serial.println(y);
+			Serial.println(R);
+			Serial.println(G);
+			Serial.println(B);
+
+			if(x == 0 && y == 0 && & R == 0 && G == 0 && B == 0)
+			{
+				Serial.println("Reset to start bit");
+				delay(500);
+				break; //probably bad data in the queue
+
+			}
+
+			findPixels(x,y);
+
+			for(int i = 0; i < numPixelsInBlock; i++)
+			{
+				if(pixelsInBlock[i] == -1)
+				{
+					Serial.println("Pixel out of range");
+				}
+				else
+				{
+					Serial.print("Lighting pixel ");
+					Serial.println(pixelsInBlock[i]);
+					strip.setPixelColor(pixelsInBlock[i], R,G,B); 
+				}
+			}
+
+			if(Serial.available())
+			{
+				peek = Serial.peek();
+                                if(peek = ' ' && Serial.peek() == '\n')
+                                {
+                                  Serial.println("space \\n"); 
+                                  break; 
+                                }
+			}
+			else
+			{
+				break;
+			}
+		}
+		//clear out the newline
+		Serial.println("found the stop bit");
+		strip.show();
+	}
+	else if (Serial.available())
+	{ 
+		Serial.print("ignoring: ");
+		Serial.println(Serial.read());//we don't care if it's not the start bit
+	}
+	delay(100);
+}
+
+
+void ClearBoard(boolean latch){
+	for(int i = 0; i < numPixels; i++)
+	{
+		strip.setPixelColor(i, 0,0,0);   
+		if(latch)
+		{
+			strip.show();
+		}
+	}
+}
+
 // Find pixels contained within a Block and populates pixelsInBlock of size blockSize^2 containing individual pixel numbers
-   // If a pixel number is -1, it is not in the block
-   // NOTE: Will return value outside of range, no bounds checking
-   void findPixels (int blockX, int blockY)
-   {
-       int pixelRow, pixelCol;
-       
-       for(pixelRow = 0; pixelRow < blockSize; pixelRow++)
-       {
-           for(pixelCol = 0; pixelCol < blockSize; pixelCol++)
-           {
-               // Calculate pixel's X and Y value
-               int pixelX = pixelCol + blockX * blockSize;
-               int pixelY = pixelRow + blockY * blockSize;
-               int index = pixelCol + blockSize * pixelRow;
-               
-               if(pixelX > displayWidth || pixelY > displayHeight)
-               {
-                   pixelsInBlock[index] = -1;
-               }
-               else
-               {
-                   pixelsInBlock[index] = pixelX + pixelY * displayWidth;
-               }
-           }
-       }
-   }
+// If a pixel number is -1, it is not in the block
+// NOTE: Will return value outside of range, no bounds checking
+void findPixels (int blockX, int blockY)
+{
+	int pixelRow, pixelCol;
+
+	for(pixelRow = 0; pixelRow < blockSize; pixelRow++)
+	{
+		for(pixelCol = 0; pixelCol < blockSize; pixelCol++)
+		{
+			// Calculate pixel's X and Y value
+			int pixelX = pixelCol + blockX * blockSize;
+			int pixelY = pixelRow + blockY * blockSize;
+			int index = pixelCol + blockSize * pixelRow;
+
+			if(pixelX > displayWidth || pixelY > displayHeight)
+			{
+				pixelsInBlock[index] = -1;
+			}
+			else
+			{
+				pixelsInBlock[index] = pixelX + pixelY * displayWidth;
+			}
+		}
+	}
+}
 
 
