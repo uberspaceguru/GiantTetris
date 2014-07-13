@@ -11,7 +11,7 @@ class Display():
 
         # serial port config
         #self.SERIAL_COM_PORT = 'COM5'
-        self.SERIAL_COM_PORT = 'COM6'
+        self.SERIAL_COM_PORT = 'COM14'
         self.BAUD_RATE = 115200
         self.PARITY = serial.PARITY_NONE
         self.STOPBITS = serial.STOPBITS_ONE
@@ -37,9 +37,18 @@ class Display():
         self.serialPort.close()
 
     def draw(self):
+        firstTimeThroughLoop = True;
+
         if self.on_pixels:
             self.serial_send(self.START_OF_STREAM)
             for pixel in self.on_pixels:
+
+                if(not firstTimeThroughLoop):
+                    #need a seperator if we are sending more than one pixel
+                    self.serial_send(self.VALUE_SEPARATOR)
+                else:
+                    firstTimeThroughLoop = False
+
                 #self.serial_send(self.on_pixels[pixel].get('x', 0))
                 self.serial_send(self.on_pixels[pixel]['x'])
                 self.serial_send(self.VALUE_SEPARATOR)
@@ -54,7 +63,8 @@ class Display():
                 self.serial_send(self.VALUE_SEPARATOR)
                 #self.serial_send(self.on_pixels[pixel].get('b', 0))
                 self.serial_send(self.on_pixels[pixel]['b'])
-                self.serial_send(self.VALUE_SEPARATOR)
+
+
             self.serial_send(self.END_OF_STREAM)
 
     def clear(self):
@@ -89,7 +99,7 @@ class Display():
             pass
             self.serialPort.write(data)
 
-        if self.serialPort.portstr == 'COM6':
+        if self.serialPort.portstr == 'COM14':
             print(self.serialPort.readline(), end='')
 
         #if self.SERIAL_COM_PORT == 'COM6':

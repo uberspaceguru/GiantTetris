@@ -7,7 +7,7 @@ class Controller:
         self.port = '5555'
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
-        self.socket.RCVTIMEO = 1000
+        self.socket.RCVTIMEO = 100
         self.socket.bind('tcp://*:%s' % self.port)
 
         self.cmd_queue = deque()
