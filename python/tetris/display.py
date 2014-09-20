@@ -54,7 +54,6 @@ class Display():
                 self.serial_send(self.VALUE_SEPARATOR)
                 #self.serial_send(self.on_pixels[pixel].get('b', 0))
                 self.serial_send(self.on_pixels[pixel]['b'])
-                self.serial_send(self.VALUE_SEPARATOR)
             self.serial_send(self.END_OF_STREAM)
 
     def clear(self):
